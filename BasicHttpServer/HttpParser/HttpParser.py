@@ -1,18 +1,19 @@
-from typing import List, Dict
+from typing import Dict
 import traceback
 
 class HTTPRequest:
    
-    def __init__(self, route: str = '', method:str = '', version:str = '' , headers: List[Dict[str, str]]  = {}, body: bytes = None ) -> None:
-        self.route = route
-        self.method = method
-        self.version = version
-        self.headers =  headers
-        self.body = body
+    def __init__(self) -> None:
+        self.route: str = ''
+        self.method: str = ''
+        self.version: str = ''
+        self.headers =  {}
+        self.body = None
         
     def appendHeader(self, header: Dict[str, str]):
-        if header is not None:
-            self.headers.append(header)
+        keys =list(header.keys())
+        if header is not None and keys[0] not in self.headers:
+            self.headers[keys[0]] = header[keys[0]]
         
 def parseHTTPRequest(rawRequest: bytes) -> HTTPRequest:
     retObj: HTTPRequest = None
@@ -22,9 +23,9 @@ def parseHTTPRequest(rawRequest: bytes) -> HTTPRequest:
     requestLength: int = len(rawRequest)
     
     startByteIndex: int = 0
-    endByteIndex: int = 2
+    endByteIndex: int = 1
     
-    byteIncSize = 2
+    byteIncSize = 1
     
     counter: int = 0
     while endByteIndex < requestLength:
@@ -37,6 +38,10 @@ def parseHTTPRequest(rawRequest: bytes) -> HTTPRequest:
             startByteIndex += byteIncSize
             endByteIndex += byteIncSize
             
+            if curLine.endswith('\r\n') or curLine.endswith('\r\n\r\n'):
+                break
+            
+        strRequest += curLine
         if counter == 0:
             retObj = parseFirstLine(curLine)
             
@@ -47,14 +52,16 @@ def parseHTTPRequest(rawRequest: bytes) -> HTTPRequest:
                 
         elif counter > 0 and strRequest.endswith('\r\n\r\n'):
             if endByteIndex + 1 < requestLength:
-                retObj.body = rawRequest[startByteIndex : requestLength - 1]
+                retObj.body = rawRequest[startByteIndex : requestLength]
+                break
         else:
             print("I messed up")
+            print(f'parsed Http request {retObj.__dict__}')
+            print(f'requestLength: {requestLength} \ncounter: {counter} \nstartByteIndex: {startByteIndex} \nendByteIndex:{endByteIndex}')
             traceback.print_exc()
             break
             
                
-        strRequest += curLine
         counter += 1
         
         
@@ -66,7 +73,7 @@ def parseHTTPRequest(rawRequest: bytes) -> HTTPRequest:
 
 def parseFirstLine(line1: str) -> HTTPRequest:
     retItem: HTTPRequest = HTTPRequest()
-    
+      
     line1 = line1.strip()
     line1Split = line1.split(" ")
     for linePart in line1Split:
