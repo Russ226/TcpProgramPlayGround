@@ -1,0 +1,16 @@
+DELETE /delete HTTP/1.1
+Content-Type: application/json
+User-Agent: PostmanRuntime/7.26.8
+Accept: */*
+Cache-Control: no-cache
+Postman-Token: e6fa2b02-d6ba-4fe0-960e-2d1708d620ae
+Host: 192.168.1.146:8080
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+Content-Length: 61
+
+{
+    "user": "larry",
+    "id": 43,
+    "active": true
+}

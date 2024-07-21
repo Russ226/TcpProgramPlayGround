@@ -1,0 +1,16 @@
+PATCH /update?test=true&userid=80&username=larry HTTP/1.1
+Content-Type: application/json
+User-Agent: PostmanRuntime/7.26.8
+Accept: */*
+Cache-Control: no-cache
+Postman-Token: 4139c842-fda7-48fb-8d2b-40d2ac079993
+Host: 192.168.1.146:8080
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+Content-Length: 60
+
+{
+    "user": "dick",
+    "id": 23,
+    "active": true
+}
