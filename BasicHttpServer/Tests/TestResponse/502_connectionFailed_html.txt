@@ -1,0 +1,8 @@
+HTTP/1.1 502 Fiddler - Connection Failed
+Date: Tue, 23 Jul 2024 00:25:25 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: close
+Cache-Control: no-cache, must-revalidate
+Timestamp: 20:25:25.999
+
+[Fiddler] The connection to '127.0.0.1' failed. <br />Error: ConnectionRefused (0x274d). <br />System.Net.Sockets.SocketException No connection could be made because the target machine actively refused it 127.0.0.1:32400                                                                                                                                                                                                                                                                                                    

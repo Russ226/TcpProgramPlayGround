@@ -1,0 +1,12 @@
+HTTP/1.1 401 Unauthorized
+X-Plex-Protocol: 1.0
+Content-Type: text/html
+Connection: close
+Content-Encoding: gzip
+X-Plex-Content-Original-Length: 193
+X-Plex-Content-Compressed-Length: 157
+Content-Length: 157
+Cache-Control: no-cache
+Date: Tue, 23 Jul 2024 00:25:19 GMT
+
+‹      ÿ]ŽAÂ E¯ÂÂ¤Õ&Œ$î¹…+Û&0P08¦êéEq£»É›™ÿ:šƒDg•‘xÕÙ_H.>š´ð´"Ÿ";°?Â]¶g>+Ò®…vä]ëÓØÃ°Y•A¬cÍb'(_öÎßÍá›Žä)XyŒêF.eÿ´¡2„ê1%ó(NBî¶‚ýˆP÷ðQ†Z”>Á   

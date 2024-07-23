@@ -68,7 +68,44 @@ def parseHTTPRequest(rawRequest: bytes) -> HttpResponse:
     return retObj
 
 def parseFirstLine(line: str) -> HttpResponse:
-    pass      
+    retObj: HttpResponse = HttpResponse()
+    parsedLine: str = ''  
+    
+    sizeLine = len(line)
+    cursor: int = 0
+    
+    while not parsedLine.endswith('\r\n') and cursor < sizeLine:
+            section: str = ''
+            
+            while section.endswith(' ') and cursor < sizeLine:
+                section += line[cursor]
+                cursor += 1
+            
+            section = section.strip()
+            potStatusCode = isStatusCode(section)
+            
+            if section.lower().startswith('http'):
+                retObj.version = section
+            
+            elif potStatusCode != -999:
+                retObj.statusCode = potStatusCode
+                retObj.statusName = line[cursor: len(line)].strip()
+                break
+            
+def isStatusCode(toParse: str) -> int:
+    failCode = -999
+    try:
+        tempInt = int(toParse)
+        
+        if tempInt > 100 and tempInt < 600:
+            return tempInt
+        
+        return failCode
+    except Exception:
+        return failCode
+                       
+            
+           
             
 def parseHeaders(headersToParse: str) -> dict[str, str]:
     headersToParse = headersToParse.strip()
