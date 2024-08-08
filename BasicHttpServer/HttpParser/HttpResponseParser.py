@@ -15,7 +15,7 @@ class HttpResponse:
         if header is not None and keys[0] not in self.headers:
             self.headers[keys[0]] = header[keys[0]]
             
-def parseHTTPRequest(rawRequest: bytes) -> HttpResponse:
+def parseHTTPResponse(rawRequest: bytes) -> HttpResponse:
     retObj: HttpResponse = None
     strRequest: str = ''
     #splitReq: List[bytes] = bytes.splitlines(rawRequest)
@@ -68,29 +68,33 @@ def parseHTTPRequest(rawRequest: bytes) -> HttpResponse:
     return retObj
 
 def parseFirstLine(line: str) -> HttpResponse:
+    
     retObj: HttpResponse = HttpResponse()
     parsedLine: str = ''  
     
     sizeLine = len(line)
     cursor: int = 0
     
-    while not parsedLine.endswith('\r\n') and cursor < sizeLine:
-            section: str = ''
-            
-            while section.endswith(' ') and cursor < sizeLine:
-                section += line[cursor]
-                cursor += 1
-            
-            section = section.strip()
-            potStatusCode = isStatusCode(section)
-            
-            if section.lower().startswith('http'):
-                retObj.version = section
-            
-            elif potStatusCode != -999:
-                retObj.statusCode = potStatusCode
-                retObj.statusName = line[cursor: len(line)].strip()
-                break
+    while not parsedLine.endswith('\\r\\n') and cursor < sizeLine:
+        section: str = ''
+        
+        while not section.endswith(' ') and cursor < sizeLine:
+            section += line[cursor]
+            cursor += 1
+        
+        parsedLine += section
+        section = section.strip()
+        postStatusCode = isStatusCode(section)
+        
+        if section.lower().startswith('http'):
+            retObj.version = section
+        
+        elif postStatusCode != -999:
+            retObj.statusCode = postStatusCode
+            retObj.statusName = line[cursor: len(line) - (len('\\r\\n') if line.endswith('\\r\\n') else len('\r\n'))]
+            break
+
+    return retObj
             
 def isStatusCode(toParse: str) -> int:
     failCode = -999
