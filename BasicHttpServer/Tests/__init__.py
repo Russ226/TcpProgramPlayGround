@@ -1,1 +1,1 @@
-__package__ = 'tests'
+__package__ = 'Tests'

@@ -2,8 +2,8 @@ import os
 import sys
 sys.path.append(os.getcwd())
 
-from BasicHttpServer.HttpParser.HttpResponseParser import parseFirstLine, HttpResponse, parseHTTPResponse
-
+from BasicHttpServer.HttpParser.HttpResponseParser import parseFirstLine, parseHTTPResponse
+from BasicHttpServer.Models.HttpResponse import HttpResponse
 
 
 

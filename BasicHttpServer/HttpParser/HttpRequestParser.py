@@ -1,20 +1,11 @@
 from typing import Dict
 import traceback
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
-class HTTPRequest:
-   
-    def __init__(self) -> None:
-        self.route: str = ''
-        self.method: str = ''
-        self.version: str = ''
-        self.headers: Dict[str, str] =  {}
-        self.body: bytes = None
-        
-    def appendHeader(self, header: Dict[str, str]):
-        keys =list(header.keys())
-        if header is not None and keys[0] not in self.headers:
-            self.headers[keys[0]] = header[keys[0]]
-        
+from BasicHttpServer.Models.HttpRequest import HTTPRequest
+
 def parseHTTPRequest(rawRequest: bytes) -> HTTPRequest:
     retObj: HTTPRequest = None
     strRequest: str = ''
