@@ -19,6 +19,6 @@ def GetHttpStatusCode(code) -> HttpStatusCodeDetail:
         if str(str_code) in t:
             return HttpStatusCodeDetail(t[str_code]["code"], t[str_code]["message"], t[str_code]["description"])
     
-    raise HttpStatusNotFound()
+    raise HttpStatusNotFound(code)
         
         
