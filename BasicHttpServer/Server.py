@@ -3,12 +3,13 @@ import traceback
 import threading
 
 from HttpParser.HttpRequestParser import parseHTTPRequest
+from HttpHandler.HttpHandler import HttpHandler
 
 class MyHTTPServer:
              
     def run(self):
         sock  = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(2)
+
         sock.bind(("192.168.1.146", 8080))
         sock.listen(1)
         self.counter: int = 0
@@ -19,7 +20,6 @@ class MyHTTPServer:
             
             try:
                 conn , addr = sock.accept()
-                conn.settimeout(2)
                 
                 print("\n")
                 print(f'connection recieved from {addr}:\n', )
@@ -38,22 +38,24 @@ class MyHTTPServer:
 
     def recieveRequest(self, conn: socket) -> None:
         req:bytes = bytes()
-        curByteLength = 0
-        prevByteLength = 0
+        
         try:
-            while True:
-                more: bytes = conn.recv(1024)
+            req += conn.recv(1024)
             
-                curByteLength = len(more)
-                if more:
-                    req += more
-                else:
-                    break
-               
-                if prevByteLength > curByteLength:
-                    break
-                
-                prevByteLength = curByteLength
+            print(req, '\n')
+            parsedReq = parseHTTPRequest(req)
+            
+            if 'Content-Length' in parsedReq.headers:
+                pass
+                #read body
+        
+            handler = HttpHandler(parsedReq)
+            resp = handler.HandleRequest()
+            
+            conn.send(resp.createRawResponse())
+            if resp.body is not None:
+                conn.send(resp.body)
+           
         except TimeoutError:
                 pass
         except Exception:
@@ -61,9 +63,7 @@ class MyHTTPServer:
         finally:
             # with open(f'C:\\Users\\russ2\\Desktop\\TcpPrograms\\BasicHttpServer\\Tests\\TestRequests\\testfile{self.counter}.txt', 'wb') as rightToFile:
             #     rightToFile.write(req) 
-            print(req, '\n')
-            parsedReq = parseHTTPRequest(req)
-            print(parsedReq.__dict__)
+            
             conn.close() 
 
 

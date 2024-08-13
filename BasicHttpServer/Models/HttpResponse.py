@@ -23,14 +23,11 @@ class HttpResponse:
     def createRawResponse(self) -> bytes:
         strrep = f'{self.version} {self.statusCode} {self.statusName}\\r\\n'
         
-        for header in self.headers:
-            key = [*header]
-            strrep += f'{key[0]}: {header[key[0]]}\\r\\n'
+        for key, val in self.headers.items():
+            strrep += f'{key}: {val}\\r\\n'
         
         strrep += '\\r\\n'
-        if self.body is not None:
-            return strrep.encode() + self.body
-        
+              
         return strrep.encode()            
     
     @staticmethod        
@@ -57,6 +54,6 @@ class HttpResponse:
         for header in headers:
             retResponse.appendHeader(header)
             
-        
-        
+        retResponse.body = body
+
         return retResponse

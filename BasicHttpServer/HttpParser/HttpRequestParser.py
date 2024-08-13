@@ -4,10 +4,10 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from BasicHttpServer.Models.HttpRequest import HTTPRequest
+from BasicHttpServer.Models.HttpRequest import HttpRequest
 
-def parseHTTPRequest(rawRequest: bytes) -> HTTPRequest:
-    retObj: HTTPRequest = None
+def parseHTTPRequest(rawRequest: bytes) -> HttpRequest:
+    retObj: HttpRequest = None
     strRequest: str = ''
     #splitReq: List[bytes] = bytes.splitlines(rawRequest)
     
@@ -62,8 +62,8 @@ def parseHTTPRequest(rawRequest: bytes) -> HTTPRequest:
     
 
 
-def parseFirstLine(line1: str) -> HTTPRequest:
-    retItem: HTTPRequest = HTTPRequest()
+def parseFirstLine(line1: str) -> HttpRequest:
+    retItem: HttpRequest = HttpRequest()
       
     line1 = line1.strip()
     line1Split = line1.split(" ")

@@ -1,6 +1,6 @@
 from typing import Dict
 
-class HTTPRequest:
+class HttpRequest:
    
     def __init__(self) -> None:
         self.route: str = ''

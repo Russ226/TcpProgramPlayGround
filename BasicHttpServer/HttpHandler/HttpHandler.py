@@ -15,9 +15,13 @@ class HttpHandler:
     # ignore queryparams
     def HandleRequest(self) -> HttpResponse:
         if self.request.route == '/':
-            resp = HttpResponse()
             indexHtml = os.path.join(self.workingDir, 'index.html')
             
             if os.path.exists(indexHtml):
-                pass
+                with open(indexHtml, 'rb') as readFile:
+                    retBody = readFile.read()
+                    
+                    return HttpResponse.createHttpResponse(code = 200, body = retBody, contentType = 'text/html')
+            
+        return HttpResponse.createHttpResponse(code = 404)
             

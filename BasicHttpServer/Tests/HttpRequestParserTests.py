@@ -3,7 +3,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from BasicHttpServer.HttpParser import HttpRequestParser
-from BasicHttpServer.Models.HttpRequest import HTTPRequest
+from BasicHttpServer.Models.HttpRequest import HttpRequest
 
 def test_ParseFirstLine():
     test_line1 = 'GET / HTTP/1.1'
@@ -63,7 +63,7 @@ def test_httpRquest():
     test_httpRquest_delete_body: bytes = None
     
     
-    expect_result1: HTTPRequest = HTTPRequest()
+    expect_result1: HttpRequest = HttpRequest()
     
     expect_result1.method = 'PATCH'
     expect_result1.route = '/update?test=true&userid=80&username=larry'
@@ -81,7 +81,7 @@ def test_httpRquest():
         'Content-Length': '60'
     }
     
-    expect_result2: HTTPRequest = HTTPRequest()
+    expect_result2: HttpRequest = HttpRequest()
     
     expect_result2.method = 'GET'
     expect_result2.route = '/update?test=true&userid=80&username=larry'
@@ -99,7 +99,7 @@ def test_httpRquest():
         'Content-Length': '39358'
     }
     
-    expect_result3: HTTPRequest = HTTPRequest()
+    expect_result3: HttpRequest = HttpRequest()
     
     expect_result3.method = 'GET'
     expect_result3.route = '/'
@@ -116,7 +116,7 @@ def test_httpRquest():
         'Accept-Language': 'en-US,en;q=0.9'
     }
     
-    expect_result4: HTTPRequest = HTTPRequest()
+    expect_result4: HttpRequest = HttpRequest()
     
     expect_result4.method = 'DELETE'
     expect_result4.route = '/delete'
