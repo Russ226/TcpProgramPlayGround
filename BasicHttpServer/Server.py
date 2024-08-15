@@ -36,7 +36,7 @@ class MyHTTPServer:
                 self.counter += 1
             
 
-    def recieveRequest(self, conn: socket) -> None:
+    def recieveRequest(self, conn: socket.socket) -> None:
         req:bytes = bytes()
         
         try:
@@ -46,8 +46,11 @@ class MyHTTPServer:
             parsedReq = parseHTTPRequest(req)
             
             if 'Content-Length' in parsedReq.headers:
-                pass
-                #read body
+                if parsedReq.body is not None:
+                    parsedReq.body += conn.recv(int(parsedReq.headers["Content-Length"]))
+                    
+                else:
+                    parsedReq.body = conn.recv(int(parsedReq.headers["Content-Length"]))
         
             handler = HttpHandler(parsedReq)
             resp = handler.HandleRequest()

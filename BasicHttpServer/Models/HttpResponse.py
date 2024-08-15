@@ -21,13 +21,12 @@ class HttpResponse:
             self.headers[keys[0]] = header[keys[0]]
             
     def createRawResponse(self) -> bytes:
-        strrep = f'{self.version} {self.statusCode} {self.statusName}\\r\\n'
+        strrep = f'{self.version} {self.statusCode} {self.statusName}\r\n'
         
         for key, val in self.headers.items():
-            strrep += f'{key}: {val}\\r\\n'
+            strrep += f'{key}: {val}\r\n'
         
-        strrep += '\\r\\n'
-              
+        strrep += '\r\n'     
         return strrep.encode()            
     
     @staticmethod        
@@ -43,7 +42,7 @@ class HttpResponse:
             retResponse.appendHeader({'Cache-Control': 'no-cache'})
         
         if 'Date' not in headers:
-            retResponse.appendHeader({'Date': f'{datetime.now}'})
+            retResponse.appendHeader({'Date': f'{datetime.now()}'})
             
         if 'Content-Type' not in headers and len(contentType) > 0:
             retResponse.appendHeader({'Content-Type': contentType})
