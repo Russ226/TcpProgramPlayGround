@@ -24,6 +24,8 @@ class HttpHandler:
     # handle get requets first
     # ignore queryparams
     def HandleRequest(self) -> HttpResponse:
+        filepath = self.workingDir + self.request.route.replace('/', '\\')
+          
         if self.request.route == '/':
             indexHtml = os.path.join(self.workingDir, 'index.html')
             
@@ -33,8 +35,8 @@ class HttpHandler:
                     
                     return HttpResponse.createHttpResponse(code = 200, body = retBody, contentType = 'text/html')
                 
-        if os.path.isdir(os.path.join(self.workingDir, self.request.route)):
-            indexHtml = os.path.join(self.workingDir, self.request.route, 'index.html')
+        if os.path.isdir(filepath):
+            indexHtml = os.path.join(filepath, 'index.html')
             
             if os.path.exists(indexHtml):
                 with open(indexHtml, 'rb') as readFile:
@@ -42,12 +44,12 @@ class HttpHandler:
                     
                     return HttpResponse.createHttpResponse(code = 200, body = retBody, contentType = 'text/html')
                 
-        filepath = self.workingDir + self.request.route.replace('/', '\\')  
         if os.path.isfile(filepath) and os.path.exists(filepath):
             
             with open(filepath, 'rb') as readFile:
                 retBody = readFile.read()
-                filetype = filepath[-3:]
+                splitfilepath = filepath.split('.')
+                filetype = splitfilepath[len(splitfilepath) - 1]
                 
                 if filetype in CONTENTTYPES:
                     return HttpResponse.createHttpResponse(code = 200, body = retBody, contentType = CONTENTTYPES[filetype])
