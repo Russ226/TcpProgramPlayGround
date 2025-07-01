@@ -1,0 +1,16 @@
+POST /test HTTP/1.1
+Content-Type: application/json
+User-Agent: PostmanRuntime/7.26.8
+Accept: */*
+Cache-Control: no-cache
+Postman-Token: 1f5a5c52-d86d-495c-93e4-5aaee56390ea
+Host: 127.0.0.1:8080
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+Content-Length: 61
+
+{
+    "user":"test",
+    "id": 1,
+    "isActive": false
+}
