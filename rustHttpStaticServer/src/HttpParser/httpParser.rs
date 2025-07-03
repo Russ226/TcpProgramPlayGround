@@ -1,38 +1,55 @@
-enum HttpMethod{
-    GET,
-    HEAD,
-    POST,
-    PUT,
-    DELETE,
-    CONNECT,
-    OPTIONS,
-    TRACE,
-    PATCH,
-}
-
-struct HttpRequest{
-    method: HttpMethod,
-    version:  &str,
-    route:  &str,
-    headers: HashMap<&str, &str>
-}
-
-fn getHttpMethod(m: &str) -> HttpMethod {
-    return match m{
-        "GET" => HttpMethod.GET,
-        "HEAD" => HttpMethod.HEAD,
-        "POST" => HttpMethod.POST,
-        "PUT" => HttpMethod.PUT,
-        "DELETE" => HttpMethod.DELETE,
-        "OPTIONS" => HttpMethod.OPTIONS,
-        "TRACE" => HttpMethod.TRACE,
-        "PATCH" => HttpMethod.PATCH
+mod http_parser {
+    use std::collections::HashMap;
+    use std::io::Error;
+    use std::result::Result;
+    enum HttpMethod {
+        GET,
+        HEAD,
+        POST,
+        PUT,
+        DELETE,
+        CONNECT,
+        OPTIONS,
+        TRACE,
+        PATCH,
     }
-}
 
-fn parseFirstLine(line: &str) -> HttpRequest{
-    let method: HttpMethod;
-    let version: &str;
-    let route:  &str;
+    struct HttpRequest<'a> {
+        method: HttpMethod,
+        version: &'a str,
+        route: &'a str,
+        headers: HashMap<&'a str, &'a str>,
+    }
 
+    fn get_http_method(m: &str) -> Result<HttpMethod, Error> {
+        return match m {
+            "GET" => Ok(HttpMethod::GET),
+            "HEAD" => Ok(HttpMethod::HEAD),
+            "POST" => Ok(HttpMethod::POST),
+            "PUT" => Ok(HttpMethod::PUT),
+            "DELETE" => Ok(HttpMethod::DELETE),
+            "OPTIONS" => Ok(HttpMethod::OPTIONS),
+            "TRACE" => Ok(HttpMethod::TRACE),
+            "PATCH" => Ok(HttpMethod::PATCH),
+            _ => Err(Error::other("Invalid Http Method")),
+        };
+    }
+
+    fn parse_first_line(line: &str) -> Result<(HttpMethod, &str, &str), Error> {
+        let method: HttpMethod;
+        let version: &str;
+        let route: &str;
+
+        let split_line: Vec<_> = line.split(" ").collect();
+
+        if split_line.len() != 3 {
+            Error::other("Invalid Http Request");
+        }
+
+        method = get_http_method(split_line[0]).unwrap();
+        version = split_line[1];
+        route = split_line[2];
+
+        return Ok((method, version, route));
+    }
 }
