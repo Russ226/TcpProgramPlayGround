@@ -1,3 +1,5 @@
+pub(crate) mod http_parser;
+
 use std::{io::{Read, Write}, net::TcpListener, path::Path};
 use std::fs::File; 
 
