@@ -54,3 +54,7 @@ pub fn parse_first_line(line: &str) -> Result<(HttpMethod, &str, &str), Error> {
     return Ok((method, version, route));
 }
 
+pub fn parse_http_request() -> Result<HttpRequest, Error>{
+
+}
+
