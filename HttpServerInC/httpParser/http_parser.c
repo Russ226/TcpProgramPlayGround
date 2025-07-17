@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+struct HttpHeader{
+    char *name;
+    char *value;
+};
+
+
 enum HttpMethod{
     GET,
     HEAD,
@@ -17,6 +23,11 @@ enum HttpMethod{
 struct HttpRequest{
     enum HttpMethod method;
     char* version;
-    
-
+    struct HttpHeader *httpHeaders;
+    size_t httpHeadersSize;
+    unsigned char *body 
 };
+
+struct HttpRequest* parse_first_line(){
+
+}

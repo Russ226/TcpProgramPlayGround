@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests{
+    use std::fs;
+
     #[path = "../../src/http_parser/http_parser.rs"]
     mod http_parser;
 
@@ -25,5 +27,16 @@ mod tests{
        assert_eq!(result.1, "/test");
        assert_eq!(result.2, "HTTP/1.1");
        
+    }
+    #[test]
+    fn parse_headers(){
+        let headers = fs::read_to_string("tests\\headers1.text").expect("Should have been able to read the file");
+
+        let result = http_parser::parse_headers(&headers);
+
+        assert_eq!(result["Host"], "127.0.0.1:8080");
+        assert_eq!(result["Connection"], "keep-alive");
+        assert_eq!(result["Sec-Fetch-User"], "?1");
+        assert_eq!(result["Accept-Language"], "en-US,en;q=0.9");
     }
 }
