@@ -1,11 +1,10 @@
-pub(crate) mod http_parser;
 
-use std::fs::File;
 use std::{
     io::{Read, Write},
-    net::TcpListener,
-    path::Path,
+    net::TcpListener
 };
+
+mod http_parser;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
@@ -16,10 +15,15 @@ fn main() {
                 counter += 1;
                 let mut buf: Vec<u8> = Vec::new();
                 s.read_to_end(&mut buf).expect("failed to read request");
-                let req = String::from_utf8_lossy(&mut buf[..]);
+                let req = http_parser::http_parser::parse_http_request(buf);
 
-                println!("{}", req);
+                match req {
+                    Ok(r) => println!("{:?}", r),
+                    Err(e) => println!("error pasring request\n{}", e)
+                }
+
                 s.write(b"Hello World\r\n").unwrap();
+                
             }
             Err(e) => {
                 println!("{}", e);

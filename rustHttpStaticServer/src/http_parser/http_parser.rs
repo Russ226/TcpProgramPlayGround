@@ -16,6 +16,7 @@ pub enum HttpMethod {
     INVALID,
 }
 
+#[derive(Debug)]
 pub struct HttpRequest {
     pub(crate) method: HttpMethod,
     pub(crate) version: String,
@@ -75,7 +76,7 @@ pub fn parse_headers(line: String) -> HashMap<String, String> {
 }
 
 pub fn parse_http_request(mut request: Vec<u8>) -> Result<HttpRequest, Error> {
-    let step_size = 16;
+    let step_size = 1;
     let mut first_line: String = String::new();
     let mut rest_of_headers: String = String::new();
     let mut body: Vec<u8> = Vec::new();
@@ -123,7 +124,7 @@ pub fn parse_http_request(mut request: Vec<u8>) -> Result<HttpRequest, Error> {
                 if (rest_of_headers.ends_with("\r\n\r\n") || request.len() == 0) && parsed_first_line {
                     headers = parse_headers(rest_of_headers);
 
-                    if headers.contains_key("Content-Length") {
+                    if headers.contains_key("Content-Length") && request.len() > 0 {
                         match headers["Content-Length"].parse::<u64>() {
                             Ok(size) => match request.take(size).read_to_end(&mut body) {
                                 Ok(size) => println!("Body is size {}", size),

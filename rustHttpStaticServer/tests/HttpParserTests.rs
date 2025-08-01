@@ -2,7 +2,7 @@
 mod tests {
     use std::{
         fs::{self, File},
-        io::{BufReader, Read},
+        io::Read, result,
     };
 
     #[path = "../../src/http_parser/http_parser.rs"]
@@ -81,5 +81,40 @@ mod tests {
         assert_eq!(result.headers["Accept-Language"], "en-US,en;q=0.9");
 
         assert_eq!(result.body.len(), 0);
+    }
+
+    #[test]
+    fn parse_http_request_2() {
+        let result_body = r#"{"user":"test","id":1,"isActive":false}"#;
+
+        let mut file = File::open("tests\\httpHostTestControllerjson.txt")
+            .expect("Should have been able to read the file");
+        let mut buffer: Vec<u8> = Vec::new();
+
+        match file.read_to_end(&mut buffer) {
+            Ok(_) => println!("Finished reading tests\\httpHostTestControllerjson.txt"),
+            Err(e) => panic!("Failed to read tests\\httpHostTestControllerjson.txt, {}", e),
+        }
+
+        let result = http_parser::parse_http_request(buffer).unwrap();
+
+        assert_eq!(result.method, http_parser::HttpMethod::POST);
+        assert_eq!(result.route, "/test");
+        assert_eq!(result.version, "HTTP/1.1");
+
+        assert_eq!(result.headers["Host"], "127.0.0.1:8080");
+        assert_eq!(result.headers["Connection"], "keep-alive");
+        assert_eq!(result.headers["Postman-Token"], "1f5a5c52-d86d-495c-93e4-5aaee56390ea");
+        assert_eq!(result.headers["Content-Length"], "61");
+
+        assert_eq!(result.body.len(), 61);
+
+        let str_body = match String::from_utf8(result.body){
+            Ok(s) => s,
+            Err(e) => panic!("{}", e)
+        };
+        assert_eq!(str_body.replace("\r\n", "").replace(" ", ""), result_body);
+
+
     }
 }
