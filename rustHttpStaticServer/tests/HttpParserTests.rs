@@ -69,7 +69,7 @@ mod tests {
             Err(e) => panic!("Failed to read tests\\httpGetDeafultPath.txt, {}", e),
         }
 
-        let result = http_parser::parse_http_request(buffer).unwrap();
+        let result = http_parser::parse_http_request(buffer, true).unwrap();
 
         assert_eq!(result.method, http_parser::HttpMethod::GET);
         assert_eq!(result.route, "/");
@@ -96,7 +96,7 @@ mod tests {
             Err(e) => panic!("Failed to read tests\\httpHostTestControllerjson.txt, {}", e),
         }
 
-        let result = http_parser::parse_http_request(buffer).unwrap();
+        let result = http_parser::parse_http_request(buffer, true).unwrap();
 
         assert_eq!(result.method, http_parser::HttpMethod::POST);
         assert_eq!(result.route, "/test");

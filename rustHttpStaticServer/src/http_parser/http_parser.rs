@@ -75,7 +75,8 @@ pub fn parse_headers(line: String) -> HashMap<String, String> {
     return headers;
 }
 
-pub fn parse_http_request(mut request: Vec<u8>) -> Result<HttpRequest, Error> {
+pub fn parse_http_request(mut request: Vec<u8>, read_body: bool) -> Result<HttpRequest, Error> {
+    
     let step_size = 1;
     let mut first_line: String = String::new();
     let mut rest_of_headers: String = String::new();
@@ -124,7 +125,7 @@ pub fn parse_http_request(mut request: Vec<u8>) -> Result<HttpRequest, Error> {
                 if (rest_of_headers.ends_with("\r\n\r\n") || request.len() == 0) && parsed_first_line {
                     headers = parse_headers(rest_of_headers);
 
-                    if headers.contains_key("Content-Length") && request.len() > 0 {
+                    if headers.contains_key("Content-Length") && request.len() > 0 && read_body {
                         match headers["Content-Length"].parse::<u64>() {
                             Ok(size) => match request.take(size).read_to_end(&mut body) {
                                 Ok(size) => println!("Body is size {}", size),
