@@ -1,7 +1,7 @@
 use std::{
-    io::{Read, Write},
+    io::{Read},
     net::TcpListener,
-    thread, vec,
+    thread,
 };
 
 mod http_parser;

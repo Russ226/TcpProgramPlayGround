@@ -2,45 +2,20 @@ use std::collections::HashMap;
 use std::io::{Error, Read};
 use std::result::Result;
 
-#[derive(PartialEq, Eq, Debug, Clone)]
-pub enum HttpMethod {
-    GET,
-    HEAD,
-    POST,
-    PUT,
-    DELETE,
-    CONNECT,
-    OPTIONS,
-    TRACE,
-    PATCH,
-    INVALID,
-}
+#[path = "./http_model/http_method.rs"]
+pub mod http_method;
 
 #[derive(Debug)]
 pub struct HttpRequest {
-    pub(crate) method: HttpMethod,
+    pub(crate) method: http_method::HttpMethod,
     pub(crate) version: String,
     pub(crate) route: String,
     pub(crate) headers: HashMap<String, String>,
     pub(crate) body: Vec<u8>,
 }
 
-pub fn get_http_method(m: &str) -> Result<HttpMethod, Error> {
-    return match m {
-        "GET" => Ok(HttpMethod::GET),
-        "HEAD" => Ok(HttpMethod::HEAD),
-        "POST" => Ok(HttpMethod::POST),
-        "PUT" => Ok(HttpMethod::PUT),
-        "DELETE" => Ok(HttpMethod::DELETE),
-        "OPTIONS" => Ok(HttpMethod::OPTIONS),
-        "TRACE" => Ok(HttpMethod::TRACE),
-        "PATCH" => Ok(HttpMethod::PATCH),
-        _ => Err(Error::other("Invalid Http Method")),
-    };
-}
-
-pub fn parse_first_line<'a>(line: &String) -> Result<(HttpMethod, String, String), Error> {
-    let method: HttpMethod;
+pub fn parse_first_line<'a>(line: &String) -> Result<(http_method::HttpMethod, String, String), Error> {
+    let method: http_method::HttpMethod;
     let version: String;
     let route: String;
 
@@ -50,7 +25,7 @@ pub fn parse_first_line<'a>(line: &String) -> Result<(HttpMethod, String, String
         Error::other("Invalid Http Request");
     }
 
-    method = get_http_method(split_line[0]).unwrap();
+    method = http_method::get_http_method(split_line[0]).unwrap();
     version = String::from(split_line[1]);
     route = String::from(split_line[2]);
 
@@ -83,7 +58,7 @@ pub fn parse_http_request(mut request: Vec<u8>, read_body: bool) -> Result<HttpR
     let mut body: Vec<u8> = Vec::new();
     let mut parsed_first_line = false;
 
-    let mut http_method: HttpMethod = HttpMethod::INVALID;
+    let mut http_method: http_method::HttpMethod = http_method::HttpMethod::INVALID;
     let mut version: String = String::new();
     let mut route: String = String::new();
     let mut headers: HashMap<String, String> = HashMap::new();

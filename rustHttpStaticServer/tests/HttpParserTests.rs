@@ -7,6 +7,7 @@ mod tests {
 
     #[path = "../../src/http_parser/http_parser.rs"]
     mod http_parser;
+   
 
     #[test]
     fn test_parse_first_line_1() {
@@ -14,7 +15,7 @@ mod tests {
 
         let result = http_parser::parse_first_line(&first_line_header).unwrap();
 
-        assert_eq!(result.0, http_parser::HttpMethod::GET);
+        assert_eq!(result.0, http_parser::http_method::HttpMethod::GET);
         assert_eq!(result.1, "/");
         assert_eq!(result.2, "HTTP/1.1");
     }
@@ -25,7 +26,7 @@ mod tests {
 
         let result = http_parser::parse_first_line(&first_line_header).unwrap();
 
-        assert_eq!(result.0, http_parser::HttpMethod::POST);
+        assert_eq!(result.0, http_parser::http_method::HttpMethod::POST);
         assert_eq!(result.1, "/test");
         assert_eq!(result.2, "HTTP/1.1");
     }
@@ -71,7 +72,7 @@ mod tests {
 
         let result = http_parser::parse_http_request(buffer, true).unwrap();
 
-        assert_eq!(result.method, http_parser::HttpMethod::GET);
+        assert_eq!(result.method, http_parser::http_method::HttpMethod::GET);
         assert_eq!(result.route, "/");
         assert_eq!(result.version, "HTTP/1.1");
 
@@ -98,7 +99,7 @@ mod tests {
 
         let result = http_parser::parse_http_request(buffer, true).unwrap();
 
-        assert_eq!(result.method, http_parser::HttpMethod::POST);
+        assert_eq!(result.method, http_parser::http_method::HttpMethod::POST);
         assert_eq!(result.route, "/test");
         assert_eq!(result.version, "HTTP/1.1");
 
