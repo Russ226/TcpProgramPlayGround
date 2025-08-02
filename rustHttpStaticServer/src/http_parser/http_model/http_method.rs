@@ -24,6 +24,7 @@ pub fn get_http_method(m: &str) -> Result<HttpMethod, Error> {
         "OPTIONS" => Ok(HttpMethod::OPTIONS),
         "TRACE" => Ok(HttpMethod::TRACE),
         "PATCH" => Ok(HttpMethod::PATCH),
+        "CONNECT" => Ok(HttpMethod::CONNECT),
         _ => Err(Error::other("Invalid Http Method")),
     };
 }

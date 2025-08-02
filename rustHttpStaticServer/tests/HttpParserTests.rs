@@ -2,7 +2,7 @@
 mod tests {
     use std::{
         fs::{self, File},
-        io::Read, result,
+        io::Read
     };
 
     #[path = "../../src/http_parser/http_parser.rs"]
