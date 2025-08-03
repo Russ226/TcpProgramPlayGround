@@ -2,11 +2,24 @@
 mod tests {
     use std::{
         fs::{self, File},
-        io::Read
+        io::Read, path::{PathBuf, Path}
     };
 
     #[path = "../../src/http_parser/http_parser.rs"]
     mod http_parser;
+
+    #[path = "../../src/http_handler/route_handler.rs"]
+    mod route_handler;
+
+    #[test]
+    fn join_paths_test(){
+        let mut root_path = PathBuf::from("c:/Users/Russ2");
+        let path =  PathBuf::from("foo/bar.txt");
+
+        root_path.push(path);
+
+        assert_eq!(root_path, Path::new("c:/Users/Russ2/foo/bar.txt"));
+    }
    
 
     #[test]
@@ -117,5 +130,53 @@ mod tests {
         assert_eq!(str_body.replace("\r\n", "").replace(" ", ""), result_body);
 
 
+    }
+
+    #[test]
+    fn test_http_file_handler_dir(){
+        let root_path = Path::new("C:/Users/russ2/Desktop/TcpPrograms");
+        let route = String::from("/route1");
+
+        match route_handler::file_handler(root_path, route){
+            Some(mut f) => {
+                let mut expect_file_result = match File::open("C:\\Users\\russ2\\Desktop\\TcpPrograms\\route1\\index.html"){
+                    Ok(f) => f,
+                    Err(e) => panic!("Failed to open C:\\Users\\russ2\\Desktop\\TcpPrograms\\route1\\index.html for expected result, {}", e)
+                };
+                let mut route_str = String::from(""); 
+                f.read_to_string(&mut route_str).expect("failed to convert file contents to string for route");
+
+                let mut index_html_str = String::from(""); 
+                expect_file_result.read_to_string(&mut index_html_str).expect("failed to convert file contents to string for expected result");
+
+                assert_eq!(route_str, index_html_str);
+
+            },
+            None => panic!("Failed to open to handle dir route, /route1")
+        };
+    }
+
+    #[test]
+    fn test_http_file_handler_file(){
+        let root_path = Path::new("C:/Users/russ2/Desktop/TcpPrograms");
+        let route = String::from("/test.js");
+
+        match route_handler::file_handler(root_path, route){
+            Some(mut f) => {
+                let mut expect_file_result = match File::open("C:\\Users\\russ2\\Desktop\\TcpPrograms\\test.js"){
+                    Ok(f) => f,
+                    Err(e) => panic!("Failed to open C:\\Users\\russ2\\Desktop\\TcpPrograms\\test.js for expected result, {}", e)
+                };
+                let mut route_str = String::from(""); 
+                f.read_to_string(&mut route_str).expect("failed to convert file contents to string for route");
+
+                let mut index_html_str = String::from(""); 
+                expect_file_result.read_to_string(&mut index_html_str).expect("failed to convert file contents to string for expected result");
+
+                assert_eq!(route_str, index_html_str);
+
+            },
+            None => panic!("Failed to open to handle dir route, /route1")
+        };
     }
 }
