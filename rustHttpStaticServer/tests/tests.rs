@@ -5,15 +5,8 @@ mod tests {
         io::Read, path::{PathBuf, Path}
     };
 
-    #[path = "../../src/http_parser/http_parser.rs"]
-    mod http_parser;
-
-    #[path = "../../src/http_handler/route_handler.rs"]
-    mod route_handler;
-
-    #[path ="../../src/http_model/http_method.rs"]
-    mod http_method;
-
+    #[path="../../src/http_manager/mod.rs"]
+    mod http_manager;
 
     #[test]
     fn join_paths_test(){
@@ -30,9 +23,9 @@ mod tests {
     fn test_parse_first_line_1() {
         let first_line_header = String::from("GET / HTTP/1.1\r\n");
 
-        let result = http_parser::parse_first_line(&first_line_header).unwrap();
+        let result = http_manager::http_parser::http_parser::parse_first_line(&first_line_header).unwrap();
 
-        assert_eq!(result.0, http_method::HttpMethod::GET);
+        assert_eq!(result.0, http_manager::http_model::http_method::HttpMethod::GET);
         assert_eq!(result.1, "/");
         assert_eq!(result.2, "HTTP/1.1");
     }
@@ -41,9 +34,9 @@ mod tests {
     fn test_parse_first_line_2() {
         let first_line_header = String::from("POST /test HTTP/1.1\r\n");
 
-        let result = http_parser::parse_first_line(&first_line_header).unwrap();
+        let result = http_manager::http_parser::http_parser::parse_first_line(&first_line_header).unwrap();
 
-        assert_eq!(result.0, http_method::HttpMethod::POST);
+        assert_eq!(result.0, http_manager::http_model::http_method::HttpMethod::POST);
         assert_eq!(result.1, "/test");
         assert_eq!(result.2, "HTTP/1.1");
     }

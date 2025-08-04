@@ -3,10 +3,7 @@ use std::{
     net::TcpListener,
     thread,
 };
-
-mod http_parser;
-mod http_handler;
-
+use http_manager;
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
     for stream in listener.incoming() {
