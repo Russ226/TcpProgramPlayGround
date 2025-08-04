@@ -1,15 +1,8 @@
+use std::io::Read;
 use std::path::{Path};
 use std::fs::File;
 
-
-#[path = "../http_model/http_method.rs"]
-mod http_method;
-
-#[path = "../http_model/http_response.rs"]
-mod http_response;
-
-#[path = "../http_model/http_request.rs"]
-mod http_request;
+use crate::http_model;
 
 pub fn file_handler(root_path: &Path, route: String) -> Option<File> {
     let combined_path = root_path.join(route.replacen('/', "", 1));
@@ -40,14 +33,44 @@ pub fn file_handler(root_path: &Path, route: String) -> Option<File> {
 
     return None;    
 }
-/* 
-pub fn http_method_handler(request: http_request::HttpRequest)-> http_response::HttpResponse{
+
+pub fn http_method_handler(root_path: &Path, request: http_model::http_request::HttpRequest)-> http_model::http_response::HttpResponse{
     match request {
-        val if val.method == http_method::HttpMethod::GET => {
-            
+        val if val.method == http_model::http_method::HttpMethod::GET => {
+            match file_handler(root_path, val.route.clone()){
+                Some(mut f) => {
+                    let mut body: Vec<u8> = Vec::new(); 
+                    let status_code = 200;
+                    let mut headers = http_model::http_response::create_basic_headers();
+
+
+                    match f.read_to_end(&mut body){
+                        Ok(_) => {},
+                        Err(e) => {
+                            println!("error reading file for {} with message {}", val.route, e);
+                            let status_code = 500;
+                            let mut headers  = http_model::http_response::create_basic_headers();
+                            return http_model::http_response::create_http_response(status_code, headers, body);
+                        }
+                    };
+
+                    return http_model::http_response::create_http_response(status_code, headers, body);
+                }
+
+                None => {
+                    let status_code = 404;
+                    let mut headers  = http_model::http_response::create_basic_headers();
+                    return http_model::http_response::create_http_response(status_code, headers, Vec::new());
+                }
+            }
         },
-        _ => 
+        _ => {
+            let status_code = 405;
+            let mut headers  = http_model::http_response::create_basic_headers();
+            headers.insert("Allow".to_string(), "GET".to_string());
+
+            return http_model::http_response::create_http_response(status_code, headers, Vec::new());
+        }
 
     }
 }
-    */

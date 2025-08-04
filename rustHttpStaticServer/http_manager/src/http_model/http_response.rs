@@ -55,3 +55,12 @@ pub fn http_response_to_u8(mut rep: HttpResponse) -> Vec<u8> {
     return ret_item;
 
 }
+
+pub fn create_basic_headers() -> HashMap<String, String> {
+    let mut headers = HashMap::new();
+
+    headers.insert("Connection".to_string(), "close".to_string());
+    headers.insert("Cache-Control".to_string(), "no-cache".to_string());
+
+    return headers;
+}
