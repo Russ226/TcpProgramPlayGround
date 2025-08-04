@@ -140,12 +140,13 @@ mod tests {
                     Err(e) => panic!("Failed to open C:\\Users\\russ2\\Desktop\\TcpPrograms\\route1\\index.html for expected result, {}", e)
                 };
                 let mut route_str = String::from(""); 
-                f.read_to_string(&mut route_str).expect("failed to convert file contents to string for route");
+                f.0.read_to_string(&mut route_str).expect("failed to convert file contents to string for route");
 
                 let mut index_html_str = String::from(""); 
                 expect_file_result.read_to_string(&mut index_html_str).expect("failed to convert file contents to string for expected result");
 
                 assert_eq!(route_str, index_html_str);
+                assert_eq!(f.1, "html");
 
             },
             None => panic!("Failed to open to handle dir route, /route1")
@@ -164,12 +165,13 @@ mod tests {
                     Err(e) => panic!("Failed to open C:\\Users\\russ2\\Desktop\\TcpPrograms\\test.js for expected result, {}", e)
                 };
                 let mut route_str = String::from(""); 
-                f.read_to_string(&mut route_str).expect("failed to convert file contents to string for route");
+                f.0.read_to_string(&mut route_str).expect("failed to convert file contents to string for route");
 
                 let mut index_html_str = String::from(""); 
                 expect_file_result.read_to_string(&mut index_html_str).expect("failed to convert file contents to string for expected result");
 
                 assert_eq!(route_str, index_html_str);
+                assert_eq!(f.1, "js");
 
             },
             None => panic!("Failed to open to handle dir route, /route1")

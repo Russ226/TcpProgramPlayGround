@@ -1,17 +1,18 @@
+use std::ffi::OsStr;
 use std::io::Read;
 use std::path::{Path};
 use std::fs::File;
 
 use crate::http_model;
 
-pub fn file_handler(root_path: &Path, route: String) -> Option<File> {
+pub fn file_handler(root_path: &Path, route: String) -> Option<(File, String)> {
     let combined_path = root_path.join(route.replacen('/', "", 1));
 
     
     if combined_path.is_dir() {
         let file = File::open(combined_path.join("index.html"));
         return match file {
-            Ok(f) => Some(f),
+            Ok(f) => Some((f, "html".to_string())),
             Err(e) => {
                 println!("Error opening index.html at {:?} with error {}", combined_path.as_os_str(), e);
                 return None;
@@ -23,7 +24,15 @@ pub fn file_handler(root_path: &Path, route: String) -> Option<File> {
         let combined_path = root_path.join(route.replacen('/', "", 1));
         let file = File::open(&combined_path);
         return match file {
-            Ok(f) => Some(f),
+            Ok(f) => {
+                match combined_path.extension().and_then(OsStr::to_str) {
+                    Some(s) =>{
+                        return Some((f, s.to_string()))
+                    },
+                    None => None   
+                }
+            }  
+                
             Err(e) => {
                 println!("Error opening index.html at {:?} with error {}", combined_path.as_os_str(), e);
                 return None;
@@ -42,9 +51,8 @@ pub fn http_method_handler(root_path: &Path, request: http_model::http_request::
                     let mut body: Vec<u8> = Vec::new(); 
                     let status_code = 200;
                     let mut headers = http_model::http_response::create_basic_headers();
-
-
-                    match f.read_to_end(&mut body){
+                    
+                    match f.0.read_to_end(&mut body){
                         Ok(_) => {},
                         Err(e) => {
                             println!("error reading file for {} with message {}", val.route, e);
