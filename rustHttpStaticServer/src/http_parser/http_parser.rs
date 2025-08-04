@@ -2,17 +2,11 @@ use std::collections::HashMap;
 use std::io::{Error, Read};
 use std::result::Result;
 
-#[path = "./http_model/http_method.rs"]
-pub mod http_method;
+#[path = "../http_model/http_method.rs"]
+mod http_method;
 
-#[derive(Debug)]
-pub struct HttpRequest {
-    pub(crate) method: http_method::HttpMethod,
-    pub(crate) version: String,
-    pub(crate) route: String,
-    pub(crate) headers: HashMap<String, String>,
-    pub(crate) body: Vec<u8>,
-}
+#[path = "../http_model/http_request.rs"]
+mod http_request;
 
 pub fn parse_first_line<'a>(line: &String) -> Result<(http_method::HttpMethod, String, String), Error> {
     let method: http_method::HttpMethod;
@@ -50,7 +44,7 @@ pub fn parse_headers(line: String) -> HashMap<String, String> {
     return headers;
 }
 
-pub fn parse_http_request(mut request: Vec<u8>, read_body: bool) -> Result<HttpRequest, Error> {
+pub fn parse_http_request(mut request: Vec<u8>, read_body: bool) -> Result<http_request::HttpRequest, Error> {
     
     let step_size = 1;
     let mut first_line: String = String::new();
@@ -115,7 +109,7 @@ pub fn parse_http_request(mut request: Vec<u8>, read_body: bool) -> Result<HttpR
         }
     }
 
-    let ret_item: HttpRequest = HttpRequest {
+    let ret_item: http_request::HttpRequest = http_request::HttpRequest {
         method: http_method,
         version: version,
         route: route,

@@ -1,6 +1,16 @@
 use std::path::{Path};
 use std::fs::File;
 
+
+#[path = "../http_model/http_method.rs"]
+mod http_method;
+
+#[path = "../http_model/http_response.rs"]
+mod http_response;
+
+#[path = "../http_model/http_request.rs"]
+mod http_request;
+
 pub fn file_handler(root_path: &Path, route: String) -> Option<File> {
     let combined_path = root_path.join(route.replacen('/', "", 1));
 
@@ -28,7 +38,15 @@ pub fn file_handler(root_path: &Path, route: String) -> Option<File> {
         }
     }
 
-    return None;
+    return None;    
+}
 
-    
+pub fn http_method_handler(request: http_request::HttpRequest)-> http_response::HttpResponse{
+    match request {
+        val if val.method == http_method::HttpMethod::GET => {
+            
+        },
+        _ => 
+
+    }
 }

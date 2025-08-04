@@ -11,6 +11,10 @@ mod tests {
     #[path = "../../src/http_handler/route_handler.rs"]
     mod route_handler;
 
+    #[path ="../../src/http_model/http_method.rs"]
+    mod http_method;
+
+
     #[test]
     fn join_paths_test(){
         let mut root_path = PathBuf::from("c:/Users/Russ2");
@@ -28,7 +32,7 @@ mod tests {
 
         let result = http_parser::parse_first_line(&first_line_header).unwrap();
 
-        assert_eq!(result.0, http_parser::http_method::HttpMethod::GET);
+        assert_eq!(result.0, http_method::HttpMethod::GET);
         assert_eq!(result.1, "/");
         assert_eq!(result.2, "HTTP/1.1");
     }
@@ -39,7 +43,7 @@ mod tests {
 
         let result = http_parser::parse_first_line(&first_line_header).unwrap();
 
-        assert_eq!(result.0, http_parser::http_method::HttpMethod::POST);
+        assert_eq!(result.0, http_method::HttpMethod::POST);
         assert_eq!(result.1, "/test");
         assert_eq!(result.2, "HTTP/1.1");
     }
@@ -85,7 +89,7 @@ mod tests {
 
         let result = http_parser::parse_http_request(buffer, true).unwrap();
 
-        assert_eq!(result.method, http_parser::http_method::HttpMethod::GET);
+        assert_eq!(result.method, http_method::HttpMethod::GET);
         assert_eq!(result.route, "/");
         assert_eq!(result.version, "HTTP/1.1");
 
@@ -112,7 +116,7 @@ mod tests {
 
         let result = http_parser::parse_http_request(buffer, true).unwrap();
 
-        assert_eq!(result.method, http_parser::http_method::HttpMethod::POST);
+        assert_eq!(result.method, http_method::HttpMethod::POST);
         assert_eq!(result.route, "/test");
         assert_eq!(result.version, "HTTP/1.1");
 
