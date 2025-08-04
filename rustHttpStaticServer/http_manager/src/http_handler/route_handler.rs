@@ -3,7 +3,7 @@ use std::io::Read;
 use std::path::{Path};
 use std::fs::File;
 
-use crate::http_model;
+use crate::http_model::{self};
 
 pub fn file_handler(root_path: &Path, route: String) -> Option<(File, String)> {
     let combined_path = root_path.join(route.replacen('/', "", 1));
@@ -53,21 +53,27 @@ pub fn http_method_handler(root_path: &Path, request: http_model::http_request::
                     let mut headers = http_model::http_response::create_basic_headers();
                     
                     match f.0.read_to_end(&mut body){
-                        Ok(_) => {},
+                        Ok(_) => {
+                            let media_type = http_model::http_content_type::file_extesion_to_media_content(f.1);
+                            let content_type = http_model::http_content_type::get_media_content_type_header(media_type);
+                            headers.insert("content-type".to_string(), content_type);
+                            headers.insert("content-length".to_string(), format!("{}", body.len()));
+                            return http_model::http_response::create_http_response(status_code, headers, body);
+
+                        },
                         Err(e) => {
                             println!("error reading file for {} with message {}", val.route, e);
                             let status_code = 500;
-                            let mut headers  = http_model::http_response::create_basic_headers();
+                            let headers  = http_model::http_response::create_basic_headers();
                             return http_model::http_response::create_http_response(status_code, headers, body);
                         }
                     };
-
-                    return http_model::http_response::create_http_response(status_code, headers, body);
                 }
 
                 None => {
                     let status_code = 404;
-                    let mut headers  = http_model::http_response::create_basic_headers();
+                    let headers  = http_model::http_response::create_basic_headers();
+
                     return http_model::http_response::create_http_response(status_code, headers, Vec::new());
                 }
             }

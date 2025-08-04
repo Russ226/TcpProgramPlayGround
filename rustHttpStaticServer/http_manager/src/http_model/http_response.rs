@@ -5,11 +5,11 @@ pub mod http_content_type;
 
 
 pub struct HttpResponse{
-    pub(crate) version: String,
-    pub(crate) status_code: u16,
-    pub(crate) status_name: String,
-    pub(crate) headers: HashMap<String, String>,
-    pub(crate) body: Vec<u8>
+    pub version: String,
+    pub status_code: u16,
+    pub status_name: String,
+    pub headers: HashMap<String, String>,
+    pub body: Vec<u8>
 }
 
 pub fn get_status_name(status_code: u16) -> Option<String> {
