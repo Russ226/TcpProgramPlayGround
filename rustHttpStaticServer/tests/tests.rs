@@ -5,8 +5,7 @@ mod tests {
         io::Read, path::{PathBuf, Path}
     };
 
-    #[path="../../src/http_manager/mod.rs"]
-    mod http_manager;
+    extern crate http_manager;
 
     #[test]
     fn join_paths_test(){
@@ -45,7 +44,7 @@ mod tests {
         let headers = fs::read_to_string("tests\\headers1.txt")
             .expect("Should have been able to read the file");
 
-        let result = http_parser::parse_headers(headers);
+        let result = http_manager::http_parser::http_parser::parse_headers(headers);
 
         assert_eq!(result["Host"], "127.0.0.1:8080");
         assert_eq!(result["Connection"], "keep-alive");
@@ -58,7 +57,7 @@ mod tests {
         let headers = fs::read_to_string("tests\\headers2.txt")
             .expect("Should have been able to read the file");
 
-        let result = http_parser::parse_headers(headers);
+        let result = http_manager::http_parser::http_parser::parse_headers(headers);
 
         assert_eq!(result["Host"], "127.0.0.1:8080");
         assert_eq!(result["Connection"], "keep-alive");
@@ -80,9 +79,9 @@ mod tests {
             Err(e) => panic!("Failed to read tests\\httpGetDeafultPath.txt, {}", e),
         }
 
-        let result = http_parser::parse_http_request(buffer, true).unwrap();
+        let result = http_manager::http_parser::http_parser::parse_http_request(buffer, true).unwrap();
 
-        assert_eq!(result.method, http_method::HttpMethod::GET);
+        assert_eq!(result.method, http_manager::http_model::http_method::HttpMethod::GET);
         assert_eq!(result.route, "/");
         assert_eq!(result.version, "HTTP/1.1");
 
@@ -107,9 +106,9 @@ mod tests {
             Err(e) => panic!("Failed to read tests\\httpHostTestControllerjson.txt, {}", e),
         }
 
-        let result = http_parser::parse_http_request(buffer, true).unwrap();
+        let result =  http_manager::http_parser::http_parser::parse_http_request(buffer, true).unwrap();
 
-        assert_eq!(result.method, http_method::HttpMethod::POST);
+        assert_eq!(result.method, http_manager::http_model::http_method::HttpMethod::POST);
         assert_eq!(result.route, "/test");
         assert_eq!(result.version, "HTTP/1.1");
 
@@ -134,7 +133,7 @@ mod tests {
         let root_path = Path::new("C:/Users/russ2/Desktop/TcpPrograms");
         let route = String::from("/route1");
 
-        match route_handler::file_handler(root_path, route){
+        match http_manager::http_handler::route_handler::file_handler(root_path, route){
             Some(mut f) => {
                 let mut expect_file_result = match File::open("C:\\Users\\russ2\\Desktop\\TcpPrograms\\route1\\index.html"){
                     Ok(f) => f,
@@ -158,7 +157,7 @@ mod tests {
         let root_path = Path::new("C:/Users/russ2/Desktop/TcpPrograms");
         let route = String::from("/test.js");
 
-        match route_handler::file_handler(root_path, route){
+        match http_manager::http_handler::route_handler::file_handler(root_path, route){
             Some(mut f) => {
                 let mut expect_file_result = match File::open("C:\\Users\\russ2\\Desktop\\TcpPrograms\\test.js"){
                     Ok(f) => f,

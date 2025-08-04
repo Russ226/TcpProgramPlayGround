@@ -40,7 +40,7 @@ pub fn file_handler(root_path: &Path, route: String) -> Option<File> {
 
     return None;    
 }
-
+/* 
 pub fn http_method_handler(request: http_request::HttpRequest)-> http_response::HttpResponse{
     match request {
         val if val.method == http_method::HttpMethod::GET => {
@@ -50,3 +50,4 @@ pub fn http_method_handler(request: http_request::HttpRequest)-> http_response::
 
     }
 }
+    */

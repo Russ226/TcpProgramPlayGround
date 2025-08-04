@@ -37,7 +37,7 @@ fn main() {
                         };
                     }
 
-                    match http_parser::http_parser::parse_http_request(buf, false) {
+                    match http_manager::http_parser::http_parser::parse_http_request(buf, false) {
                         Ok(mut r) => {
                             if r.headers.contains_key("Content-Length"){
                                 match r.headers["Content-Length"].parse::<u64>() {

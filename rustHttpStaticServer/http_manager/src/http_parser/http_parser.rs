@@ -2,11 +2,9 @@ use std::collections::HashMap;
 use std::io::{Error, Read};
 use std::result::Result;
 
-#[path = "../http_model/http_method.rs"]
-mod http_method;
+use crate::http_model::{http_method, http_request};
 
-#[path = "../http_model/http_request.rs"]
-mod http_request;
+
 
 pub fn parse_first_line<'a>(line: &String) -> Result<(http_method::HttpMethod, String, String), Error> {
     let method: http_method::HttpMethod;
