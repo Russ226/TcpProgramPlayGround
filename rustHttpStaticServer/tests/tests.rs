@@ -204,7 +204,7 @@ mod tests {
 
     #[test]
     fn test_http_response_405(){
-         let mut file = File::open("tests\\httpHostTestControllerjson.txt")
+        let mut file = File::open("tests\\httpHostTestControllerjson.txt")
             .expect("Should have been able to read the file");
         let mut buffer: Vec<u8> = Vec::new();
 
@@ -222,7 +222,49 @@ mod tests {
         assert_eq!(http_response.status_name, "METHOD NOT ALLOWED".to_string());
         assert_eq!(http_response.headers.get("Allow").is_some(), true);
         assert_eq!(http_response.headers["Allow"], "GET".to_string());
+    }
 
+    #[test]
+    fn test_http_response_404(){
+        let mut file = File::open("tests\\httpGetNotExistsPath.txt")
+            .expect("Should have been able to read the file");
+        let mut buffer: Vec<u8> = Vec::new();
 
+        match file.read_to_end(&mut buffer) {
+            Ok(_) => println!("Finished reading tests\\httpGetNotExistsPath.txt"),
+            Err(e) => panic!("Failed to read tests\\httpGetNotExistsPath.txt, {}", e),
+        }
+
+        let root_path = Path::new("C:\\Users\\russ2\\Desktop\\TcpPrograms");
+        let http_request =  http_manager::http_parser::http_parser::parse_http_request(buffer, true).unwrap();
+
+        let http_response = http_manager::http_handler::route_handler::http_method_handler(root_path, http_request);
+
+        assert_eq!(http_response.status_code, 404);
+        assert_eq!(http_response.status_name, "NOT FOUND".to_string());
+    }
+
+    #[test]
+    fn test_http_response_200_route1_path(){
+        let mut file = File::open("tests\\httpGetRoute1.txt")
+            .expect("Should have been able to read the file");
+        let mut buffer: Vec<u8> = Vec::new();
+
+        match file.read_to_end(&mut buffer) {
+            Ok(_) => println!("Finished reading tests\\httpGetRoute1.txt"),
+            Err(e) => panic!("Failed to read tests\\httpGetRoute1.txt, {}", e),
+        }
+
+        let root_path = Path::new("C:\\Users\\russ2\\Desktop\\TcpPrograms");
+        let http_request =  http_manager::http_parser::http_parser::parse_http_request(buffer, true).unwrap();
+
+        let http_response = http_manager::http_handler::route_handler::http_method_handler(root_path, http_request);
+
+        assert_eq!(http_response.status_code, 200);
+        assert_eq!(http_response.status_name, "OK".to_string());
+        assert_eq!(http_response.headers.get("content-length").is_some(), true);
+        assert_eq!(http_response.headers.get("content-type").is_some(), true);
+        assert_eq!(http_response.headers["content-type"], "text/html".to_string());
+        assert_eq!(http_response.headers["content-length"], "237");
     }
 }

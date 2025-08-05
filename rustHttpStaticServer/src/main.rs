@@ -1,9 +1,10 @@
 use std::{
-    io::{Read},
-    net::TcpListener,
-    thread,
+    io::{Read, Write}, net::TcpListener, path::Path, thread
 };
 use http_manager;
+
+const ROOT_PATH: &str = "C:\\Users\\russ2\\Desktop\\TcpPrograms";
+
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
     for stream in listener.incoming() {
@@ -59,11 +60,16 @@ fn main() {
                                 }
                             }
                             println!("{:?}", r);
-                        }
+                            let path = Path::new(ROOT_PATH);
+                            let response = http_manager::http_handler::route_handler::http_method_handler(path, r);
+                            let response_u8 = http_manager::http_model::http_response::http_response_to_u8(response);
+
+                            let _ = s.write_all(&response_u8);
+                        },
                         Err(e) => println!("error pasring request\n{}", e),
                     }
 
-                   // s.write(b"Hello World\r\n").unwrap();
+                   let _ = s.shutdown(std::net::Shutdown::Both);
                 });
             }
             Err(e) => {
