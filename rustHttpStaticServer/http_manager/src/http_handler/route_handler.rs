@@ -53,11 +53,11 @@ pub fn http_method_handler(root_path: &Path, request: http_model::http_request::
                     let mut headers = http_model::http_response::create_basic_headers();
                     
                     match f.0.read_to_end(&mut body){
-                        Ok(_) => {
+                        Ok(s) => {
                             let media_type = http_model::http_content_type::file_extesion_to_media_content(f.1);
                             let content_type = http_model::http_content_type::get_media_content_type_header(media_type);
                             headers.insert("content-type".to_string(), content_type);
-                            headers.insert("content-length".to_string(), format!("{}", body.len()));
+                            headers.insert("content-length".to_string(), format!("{}", s));
                             return http_model::http_response::create_http_response(status_code, headers, body);
 
                         },

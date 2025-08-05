@@ -50,6 +50,7 @@ pub fn http_response_to_u8(mut rep: HttpResponse) -> Vec<u8> {
 
     ret_item.append(&mut first_line.as_bytes().to_vec());
     ret_item.append(&mut headers.as_bytes().to_vec());
+    ret_item.append(&mut "\r\n".as_bytes().to_vec());
     ret_item.append(&mut rep.body);
 
     return ret_item;
