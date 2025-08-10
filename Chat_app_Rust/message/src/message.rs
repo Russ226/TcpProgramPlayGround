@@ -22,7 +22,7 @@ impl Message{
     }
 
     fn convert_to_u8(self) -> Vec<u8>{
-        let mut str_rep: String = format!("{} {} {}\r\n\r\n{}", self.size, self.sender_ip, self.sender_display_name, self.message_body);
+        let str_rep: String = format!("{} {} {}\r\n\r\n{}", self.size, self.sender_ip, self.sender_display_name, self.message_body);
 
         return str_rep.as_bytes().to_vec();
 
