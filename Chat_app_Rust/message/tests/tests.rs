@@ -85,4 +85,20 @@ mod tests {
             None => assert_eq!(true, true)
         }
     }
+
+    #[test]
+    fn test_parse_message_header(){
+        let raw_header = "28 127.0.0.1:8899 test1\r\n\r\n";
+
+        match message::message::str_to_message_header(raw_header.to_string()){
+            Some(m) =>{
+                assert_eq!(m.size, 28);
+                assert_eq!(m.sender_display_name, "test1".to_string());
+                assert_eq!(m.sender_ip, "127.0.0.1:8899".to_string());
+                assert_eq!(m.message_body.len(), 0);
+            },
+            None => assert_eq!(false, true)
+        }
+
+    }
 }

@@ -68,3 +68,39 @@ pub fn u8_to_message(u8_message: Vec<u8>) -> Option<Message> {
         },
     }
 }
+
+pub fn str_to_message_header(str_message: String) -> Option<Message> {
+    let split_header_body = str_message.replace("\r\n\r\n", "");
+
+    let split_header: Vec<_> = split_header_body.split(" ").collect();
+        if split_header.len() == 3 {
+            let size: usize = match split_header[0].parse() {
+                Ok(s) => s,
+                Err(e) => {
+                    println!("error parsing size of message {}", e);
+                    0
+                }
+            };
+            let re = RegexBuilder::new(r"([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}):([\d]{1,5})")
+                .build().expect("faiiled to create regex pattern to validate ip address");
+
+            if !re.is_match(split_header[1]){
+                return None;
+            }
+
+            return Some(Message {size: size, sender_ip: split_header[1].to_string(), 
+                sender_display_name: split_header[2].to_string(), message_body: String::new() });
+
+        }
+    return None
+}
+
+pub fn u8_to_message_header(u8_message: Vec<u8>) -> Option<Message> {
+    return match String::from_utf8(u8_message) {
+        Ok(s) => str_to_message(s),
+        Err(e) => {
+            println!("Failed to parse messsage from u8 {}", e);
+            return None;
+        },
+    }
+}
