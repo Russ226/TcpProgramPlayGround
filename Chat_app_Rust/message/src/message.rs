@@ -1,4 +1,6 @@
-use regex::{Regex, RegexBuilder};
+
+use std::fmt::{self, Display};
+use regex::RegexBuilder;
 
 /*
     structure of message 
@@ -8,6 +10,8 @@ use regex::{Regex, RegexBuilder};
     message
 
 */
+//todo!(add uri encoding to dipslay_name and message_body)
+
 #[derive(Debug, Clone)]
 pub struct Message{
     pub size: usize,
@@ -17,15 +21,21 @@ pub struct Message{
 }
 
 impl Message{
-    fn new(size: usize, sender_ip: String, sender_display_name: String, message_body: String) -> Message {
+    pub fn new(size: usize, sender_ip: String, sender_display_name: String, message_body: String) -> Message {
         return Message{size, sender_ip, sender_display_name, message_body};
     }
 
-    fn convert_to_u8(self) -> Vec<u8>{
+    pub fn convert_to_u8(&self) -> Vec<u8>{
         let str_rep: String = format!("{} {} {}\r\n\r\n{}", self.size, self.sender_ip, self.sender_display_name, self.message_body);
 
         return str_rep.as_bytes().to_vec();
 
+    }
+}
+
+impl Display for Message {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} - {}", self.sender_display_name, self.message_body)
     }
 }
 
@@ -97,7 +107,7 @@ pub fn str_to_message_header(str_message: String) -> Option<Message> {
 
 pub fn u8_to_message_header(u8_message: Vec<u8>) -> Option<Message> {
     return match String::from_utf8(u8_message) {
-        Ok(s) => str_to_message(s),
+        Ok(s) => str_to_message_header(s),
         Err(e) => {
             println!("Failed to parse messsage from u8 {}", e);
             return None;

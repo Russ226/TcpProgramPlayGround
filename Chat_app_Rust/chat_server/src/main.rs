@@ -1,23 +1,31 @@
-use std::{io::{Read, Write}, net::{SocketAddr, TcpListener, TcpStream}, sync::mpsc, thread};
+use std::{
+    io::{Read, Write},
+    net::{TcpListener, TcpStream},
+    sync::{mpsc, Arc},
+    thread,
+};
+
+use crate::model::chat_user;
 
 mod model;
 extern crate message;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:3333").expect("Failed to connect to server at 127.0.0.1:3333");
-    let mut addrs: Vec<model::chat_user::ChatUser> = Vec::new();
-    
-    loop{
+    let mut addrs: Arc<Vec<model::chat_user::ChatUser>> = Arc::new(Vec::new());
+
+    loop {
         match listener.accept() {
             Ok(mut message) => {
-                
+                let (sender, receiver) = mpsc::channel::<message::message::Message>();
                 thread::spawn(move || {
-                    let (sender, receiver) = mpsc::channel::<message::message::Message>();
-                    // parse message
                     let mut buf: Vec<u8> = Vec::new();
                     loop {
                         let mut temp_buf: [u8; 1] = [0; 1];
-                        message.0.read(&mut temp_buf).expect("failed to read request");
+                        message
+                            .0
+                            .read(&mut temp_buf)
+                            .expect("failed to read request");
 
                         buf.push(temp_buf[0]);
 
@@ -42,51 +50,61 @@ fn main() {
 
                     match message::message::u8_to_message_header(buf) {
                         Some(mut m) => {
-                            let mut body:Vec<u8> = Vec::with_capacity(m.size as usize);
+                            let mut body: Vec<u8> = Vec::with_capacity(m.size as usize);
 
-                            let mut counter = 0; 
+                            let mut counter = 0;
                             while counter < m.size {
                                 let mut temp_buf: [u8; 1] = [0; 1];
                                 message.0.read(&mut temp_buf).expect("failed to read request");
 
                                 body.push(temp_buf[0]);
-                                counter+=1;
+                                counter += 1;
                             }
 
                             match String::from_utf8(body) {
                                 Ok(sb) => {
                                     m.message_body = sb;
-                                    sender.send(m);
-                                },
-                                Err(e) => println!("Unable to parse body of message from {} with name {} with error {}", m.sender_ip, m.sender_display_name, e),
+                                    match sender.send(m) {
+                                        Ok(_) => (),
+                                        Err(e) => println!("Error dispatching message, {}", e),
+                                    }
+                                }
+                                Err(e) => println!(
+                                    "Unable to parse body of message from {} with name {} with error {}",
+                                    m.sender_ip, m.sender_display_name, e
+                                ),
                             }
-                        },
+                        }
                         None => {
                             println!("Failed to parse incoming message");
-                        },
+                        }
                     }
-
-                    // check if new user
-
-
                 });
 
-            },
-            Err(e) => println!("failed read message {}", e)
-            
-        }
+                match receiver.try_recv() {
+                    Ok(s) => {
+                        let chat_user = chat_user::ChatUser::new(s.sender_ip.clone(),s.sender_display_name.clone(),);
+                        if !addrs.contains(&chat_user) {
+                            Arc::make_mut(&mut addrs).push(chat_user);
+                        }
+                        for addr in &*addrs {
+                            match TcpStream::connect(addr.ip_addr.clone()) {
+                                Ok(mut stream) => {
+                                    let _ = stream.write(&s.clone().convert_to_u8());
+                                    let _ = stream.shutdown(std::net::Shutdown::Both);
+                                },
+                                Err(_) => {
+                                    println!("Could send message to {} {}", addr.ip_addr, addr.username);
+                                    // remove from array 
+                                },
+                            }
 
-        match receiver.try_recv(){
-            Ok(s) => {
-                for &addr in &addrs{
-                    //let mut send_messsage_conn = TcpStream::connect(addr).expect(&format!("failed to send message to {}", addr));
-                    //let _ = send_messsage_conn.write(s.as_bytes());
-                    //let _ = send_messsage_conn.shutdown(std::net::Shutdown::Both);
+                        }
+                    }
+                    Err(e) => println!("Error sending message to clients {}", e)
                 }
-            },
-            Err(e) => println!("Error sending message to clients {}", e)
+            }
+            Err(e) => println!("failed read message {}", e),
         }
     }
 }
-
-
