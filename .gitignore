@@ -166,3 +166,8 @@ cython_debug/
 BasicHttpServer/HttpParser/__pycache__/HttpParser.cpython-312.pyc
 BasicHttpServer/HttpParser/__pycache__/HttpParser.cpython-312.pyc
 BasicHttpServer/HttpParser/__pycache__/HttpParser.cpython-312.pyc
+/Chat_app_Rust/chat_client/target2/**
+debug
+target
+target2/**
+

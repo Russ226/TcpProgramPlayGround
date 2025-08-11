@@ -4,7 +4,7 @@ extern crate message;
 fn main() {
     thread::spawn(move || {
         
-         let listener = TcpListener::bind("127.0.0.1:8899").expect("Failed to connect to server at 127.0.0.1:8899");
+         let listener = TcpListener::bind("127.0.0.1:8889").expect("Failed to connect to server at 127.0.0.1:8899");
          //listener.set_nonblocking(true).expect("failed to set not blocking to true");
 
          loop{
@@ -78,8 +78,8 @@ fn main() {
                 Ok(user_input) => {
                     let cleaned_user_input = user_input.trim();
                     if cleaned_user_input.len() > 0{
-                        let send_message = message::message::Message::new(cleaned_user_input.len(), "127.0.0.1:8899".to_string(), 
-                                    "test1".to_string(), cleaned_user_input.to_string());
+                        let send_message = message::message::Message::new(cleaned_user_input.len(), "127.0.0.1:8889".to_string(), 
+                                    "test2".to_string(), cleaned_user_input.to_string());
                         let mut listener = TcpStream::connect("127.0.0.1:3333").unwrap();
                         let ff= message::message::Message::convert_to_u8(&send_message);
                         let _ = listener.write(&ff);
