@@ -1,0 +1,11 @@
+{
+    "ipAddress": "127.0.0.1:8889",
+    "hostIpAddress": "127.0.0.1:3333",
+    "userName":"test1",
+    "messages": [
+        "Hello",
+        "This is test 1",
+        "Does this work",
+        "Is this going to kill me"
+    ]
+}

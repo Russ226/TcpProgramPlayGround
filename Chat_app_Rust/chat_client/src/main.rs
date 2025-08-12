@@ -1,10 +1,22 @@
-use std::{io::{self, BufRead, Read, Write}, net::{Incoming, TcpListener, TcpStream}, thread, time::Duration};
-
+use std::{fs::File, io::{self,Read, Write}, net::{TcpListener, TcpStream}, thread};
+use serde::Deserialize;
 extern crate message;
-fn main() {
-    thread::spawn(move || {
+
+#[derive(Debug)]
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ClientConfig{
+    ip_address: String,
+    host_ip_address: String,
+    user_name: String,
+    messages: Vec<String>
+}
+
+fn run(config: ClientConfig){
+    let ipadd = config.ip_address.clone();
+     thread::spawn(move || {
         
-         let listener = TcpListener::bind("127.0.0.1:8889").expect("Failed to connect to server at 127.0.0.1:8899");
+         let listener = TcpListener::bind(ipadd).expect("Failed to connect to server at 127.0.0.1:8899");
          //listener.set_nonblocking(true).expect("failed to set not blocking to true");
 
          loop{
@@ -78,9 +90,9 @@ fn main() {
                 Ok(user_input) => {
                     let cleaned_user_input = user_input.trim();
                     if cleaned_user_input.len() > 0{
-                        let send_message = message::message::Message::new(cleaned_user_input.len(), "127.0.0.1:8889".to_string(), 
-                                    "test2".to_string(), cleaned_user_input.to_string());
-                        let mut listener = TcpStream::connect("127.0.0.1:3333").unwrap();
+                        let send_message = message::message::Message::new(cleaned_user_input.len(), config.ip_address.clone(), 
+                                    config.user_name.clone(), cleaned_user_input.to_string());
+                        let mut listener = TcpStream::connect(config.host_ip_address.clone()).unwrap();
                         let ff= message::message::Message::convert_to_u8(&send_message);
                         let _ = listener.write(&ff);
                     }
@@ -88,6 +100,27 @@ fn main() {
                 Err(e) => println!("Failed to read in user input {}", e)
             }
         }
+}
+
+fn main() {
+    let mut file = File::open("config.json")
+            .expect("Should have been able to read the file");
+    let mut buffer: Vec<u8> = Vec::new();
+
+    match file.read_to_end(&mut buffer) {
+        Ok(_) => println!("Finished reading config.json"),
+        Err(e) => panic!("Failed to read config.json, {}", e),
+    }
+
+    match serde_json::from_slice::<ClientConfig>(&buffer){
+        Ok(c) => {
+            println!("{:?}", c);
+            run(c);
+        },
+        Err(e) => panic!("failed to read config {}", e)
+    }
+
+   
     
    
 

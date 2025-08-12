@@ -12,12 +12,44 @@ extern crate message;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:3333").expect("Failed to connect to server at 127.0.0.1:3333");
-    let mut addrs: Arc<Vec<model::chat_user::ChatUser>> = Arc::new(Vec::new());
+    
     let (sender, receiver) = mpsc::channel::<message::message::Message>();
+
+    thread::spawn(move || {
+        let mut addrs: Arc<Vec<model::chat_user::ChatUser>> = Arc::new(Vec::new());
+        loop{
+            match receiver.try_recv() {
+                Ok(s) => {
+                    let chat_user = chat_user::ChatUser::new(s.sender_ip.clone(),s.sender_display_name.clone(),);
+                    if !addrs.contains(&chat_user) {
+                        Arc::make_mut(&mut addrs).push(chat_user);
+                    }
+                    let addr_clone =  Arc::make_mut(&mut addrs).clone();
+                    for addr in addr_clone {
+                        let s = s.clone();
+                        thread::spawn(move || {
+                            match TcpStream::connect(addr.ip_addr.clone()) {
+                                Ok(mut stream) => {
+                                    let _ = stream.write(&s.clone().convert_to_u8());
+                                    let _ = stream.shutdown(std::net::Shutdown::Both);
+                                },
+                                Err(_) => {
+                                    println!("Could send message to {} {}", addr.ip_addr, addr.username);
+                                    // remove from array 
+                                },
+                            }
+                        });
+
+                    }
+                }
+                Err(e) => () //println!("Error sending message to clients {}", e)
+            }
+        }
+    });
 
     loop {
         let sender_cl = sender.clone();
-        
+
         match listener.accept() {
             Ok(mut message) => {
                 thread::spawn(move || {
@@ -89,27 +121,6 @@ fn main() {
         }
 
         
-        match receiver.try_recv() {
-            Ok(s) => {
-                let chat_user = chat_user::ChatUser::new(s.sender_ip.clone(),s.sender_display_name.clone(),);
-                if !addrs.contains(&chat_user) {
-                    Arc::make_mut(&mut addrs).push(chat_user);
-                }
-                for addr in &*addrs {
-                    match TcpStream::connect(addr.ip_addr.clone()) {
-                        Ok(mut stream) => {
-                            let _ = stream.write(&s.clone().convert_to_u8());
-                            let _ = stream.shutdown(std::net::Shutdown::Both);
-                        },
-                        Err(_) => {
-                            println!("Could send message to {} {}", addr.ip_addr, addr.username);
-                            // remove from array 
-                        },
-                    }
-
-                }
-            }
-            Err(e) => println!("Error sending message to clients {}", e)
-        }
+        
     }
 }
