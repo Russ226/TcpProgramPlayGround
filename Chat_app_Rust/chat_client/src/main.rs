@@ -1,4 +1,5 @@
-use std::{fs::File, io::{self,Read, Write}, net::{TcpListener, TcpStream}, thread};
+use core::time;
+use std::{env, fs::File, io::{self,Read, Write}, net::{TcpListener, TcpStream}, thread};
 use serde::Deserialize;
 extern crate message;
 
@@ -9,17 +10,15 @@ struct ClientConfig{
     ip_address: String,
     host_ip_address: String,
     user_name: String,
+    user_input: bool,
     messages: Vec<String>
 }
 
 fn run(config: ClientConfig){
     let ipadd = config.ip_address.clone();
-     thread::spawn(move || {
-        
-         let listener = TcpListener::bind(ipadd).expect("Failed to connect to server at 127.0.0.1:8899");
-         //listener.set_nonblocking(true).expect("failed to set not blocking to true");
-
-         loop{
+    thread::spawn(move || {
+        let listener = TcpListener::bind(ipadd).expect("Failed to connect to server at 127.0.0.1:8899");
+        loop{
             match listener.accept(){
                 Ok(mut message) => {
                     let mut buf: Vec<u8> = Vec::new();
@@ -76,15 +75,14 @@ fn run(config: ClientConfig){
                             println!("Failed to parse incoming message");
                         }
                     }
-                    
                 },
                 Err(e) => println!("error recieving message {}", e)
             }
-         }
-         
+        }
     });
-    
-    let stdin = io::stdin();
+
+    if config.user_input {
+        let stdin = io::stdin();
         for line in stdin.lines() {
             match line {
                 Ok(user_input) => {
@@ -100,10 +98,26 @@ fn run(config: ClientConfig){
                 Err(e) => println!("Failed to read in user input {}", e)
             }
         }
+    }
+    else {
+        for message in config.messages {
+            let send_message = message::message::Message::new(message.len(), config.ip_address.clone(), 
+                                    config.user_name.clone(), message);
+            let mut listener = TcpStream::connect(config.host_ip_address.clone()).unwrap();
+            let ff= message::message::Message::convert_to_u8(&send_message);
+            let _ = listener.write(&ff);
+            thread::sleep(time::Duration::from_millis(1000));
+        }
+
+        thread::sleep(time::Duration::from_millis(3000));
+    }
 }
 
 fn main() {
-    let mut file = File::open("config.json")
+    let args: Vec<String> = env::args().collect();
+    println!("comand args {:?}", args);
+
+    let mut file = File::open(&args[1])
             .expect("Should have been able to read the file");
     let mut buffer: Vec<u8> = Vec::new();
 
@@ -119,12 +133,4 @@ fn main() {
         },
         Err(e) => panic!("failed to read config {}", e)
     }
-
-   
-    
-   
-
-    
-
-
 }

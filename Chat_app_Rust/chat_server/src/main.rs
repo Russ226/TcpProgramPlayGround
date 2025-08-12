@@ -33,8 +33,8 @@ fn main() {
                                     let _ = stream.write(&s.clone().convert_to_u8());
                                     let _ = stream.shutdown(std::net::Shutdown::Both);
                                 },
-                                Err(_) => {
-                                    println!("Could send message to {} {}", addr.ip_addr, addr.username);
+                                Err(e) => {
+                                    println!("Could not send message to {} {} \n\n{}", addr.ip_addr, addr.username, e);
                                     // remove from array 
                                 },
                             }
@@ -56,11 +56,7 @@ fn main() {
                     let mut buf: Vec<u8> = Vec::new();
                     loop {
                         let mut temp_buf: [u8; 1] = [0; 1];
-                        message
-                            .0
-                            .read(&mut temp_buf)
-                            .expect("failed to read request");
-
+                        message.0.read(&mut temp_buf).expect("failed to read request");
                         buf.push(temp_buf[0]);
 
                         let mut last_4_char: Vec<u8> = Vec::new();
